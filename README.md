@@ -120,36 +120,27 @@ copy .env.example .env
 
 ### Running the Application
 
-**Option A: Streamlit UI (Recommended for Demo)**
-interactive dashboard to select companies and view results side-by-side.
+**Option A: Streamlit UI (Deployable Version)**
+This is the main application allowing file uploads and API key configuration.
 ```bash
 streamlit run streamlit_app.py
-```
-
-**Option B: Command Line (Fast)**
-Generate a report for the sample data.
-```bash
-python main.py --sample --agentic
-```
-
-**Option C: Real SEC Data**
-1. Download [SEC Financial Statement Extracts](https://www.kaggle.com/datasets/securities-exchange-commission/financial-statement-extracts)
-2. Place JSON files in `data/sec_data/`
-3. Run:
-```bash
-python main.py --sec --ticker AAPL
-```
-
-**Option D: Deployable Version (Upload Your Own Data)**
-This version allows users to upload their own JSON files and configure API keys - perfect for deployment!
-```bash
-streamlit run app.py
 ```
 Features:
 - 📁 Upload JSON financial data files directly in the UI
 - 🔑 Configure Gemini/Groq API keys in the sidebar
 - 🚀 No need for `.env` file - all configuration done in browser
-- ☁️ Deploy to Streamlit Cloud, Heroku, or any cloud platform
+
+**Option B: Legacy UI (Local Development)**
+The original development version that uses local files and `.env`.
+```bash
+streamlit run legacy_app.py
+```
+
+**Option C: Command Line (Fast)**
+Generate a report for the sample data.
+```bash
+python main.py --sample --agentic
+```
 
 
 ---
