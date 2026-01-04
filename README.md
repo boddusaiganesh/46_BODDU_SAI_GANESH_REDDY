@@ -38,24 +38,24 @@ We have built an **AI-Powered MD&A Generator** that automates this entire workfl
 
 ```mermaid
 graph TD
-    Data[Data Source (SEC/CSV)] --> Loader[Data Loader]
-    Loader --> KPI[KPI Calculator]
-    Loader --> Chunker[Document Chunker]
+    Data["Data Source (SEC/CSV)"] --> Loader["Data Loader"]
+    Loader --> KPI["KPI Calculator"]
+    Loader --> Chunker["Document Chunker"]
     KPI --> Chunker
-    Chunker --> Vector[ChromaDB Vector Store]
+    Chunker --> Vector["ChromaDB Vector Store"]
     
-    subgraph "Agentic GenAI Core"
-        Vector --> RAG[RAG Pipeline]
-        RAG --> Generator[Base Generator]
-        Generator --> Agents[Agent Orchestrator]
-        Agents --> Risk[Risk Agent]
-        Agents --> Critique[Critique Agent]
+    subgraph Agentic_GenAI_Core["Agentic GenAI Core"]
+        Vector --> RAG["RAG Pipeline"]
+        RAG --> Generator["Base Generator"]
+        Generator --> Agents["Agent Orchestrator"]
+        Agents --> Risk["Risk Agent"]
+        Agents --> Critique["Critique Agent"]
     end
     
-    Risk --> Refuter[Refinement & Integration]
-    Critique --> Refuter
-    Refuter --> Guardrails[Guardrails Evaluator]
-    Guardrails --> Report[Final MD&A Report]
+    Risk --> Refiner["Refinement and Integration"]
+    Critique --> Refiner
+    Refiner --> Guardrails["Guardrails Evaluator"]
+    Guardrails --> Report["Final MD and A Report"]
 ```
 
 ### Technology Stack
@@ -120,28 +120,25 @@ copy .env.example .env
 
 ### Running the Application
 
-**Option A: Streamlit UI (Deployable Version)**
-This is the main application allowing file uploads and API key configuration.
+**Option A: Streamlit UI (Recommended for Demo)**
+interactive dashboard to select companies and view results side-by-side.
 ```bash
 streamlit run streamlit_app.py
 ```
-Features:
-- 📁 Upload JSON financial data files directly in the UI
-- 🔑 Configure Gemini/Groq API keys in the sidebar
-- 🚀 No need for `.env` file - all configuration done in browser
 
-**Option B: Legacy UI (Local Development)**
-The original development version that uses local files and `.env`.
-```bash
-streamlit run legacy_app.py
-```
-
-**Option C: Command Line (Fast)**
+**Option B: Command Line (Fast)**
 Generate a report for the sample data.
 ```bash
 python main.py --sample --agentic
 ```
 
+**Option C: Real SEC Data**
+1. Download [SEC Financial Statement Extracts](https://www.kaggle.com/datasets/securities-exchange-commission/financial-statement-extracts)
+2. Place JSON files in `data/sec_data/`
+3. Run:
+```bash
+python main.py --sec --ticker AAPL
+```
 
 ---
 
@@ -182,4 +179,3 @@ We evaluate our system using a composite Quality Score (0-100%):
 
 ---
 
-**License**: MIT
