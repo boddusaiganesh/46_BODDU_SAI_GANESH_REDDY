@@ -1,0 +1,14 @@
+[server]
+# Increase max upload size to 1GB (1000MB)
+maxUploadSize = 1000
+
+[browser]
+# Gather usage stats - set to false for privacy
+gatherUsageStats = false
+
+[theme]
+# Optional: Custom theme colors
+primaryColor = "#1E88E5"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"

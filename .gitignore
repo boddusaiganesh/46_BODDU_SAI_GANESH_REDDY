@@ -58,3 +58,14 @@ desktop.ini
 
 # MyPy
 .mypy_cache/
+
+# Test Data
+test_chroma/
+
+# Temporary Files
+check_git.py
+git_status_check.txt
+
+# Documentation/Binary
+manual.pdf
+

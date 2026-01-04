@@ -140,6 +140,18 @@ python main.py --sample --agentic
 python main.py --sec --ticker AAPL
 ```
 
+**Option D: Deployable Version (Upload Your Own Data)**
+This version allows users to upload their own JSON files and configure API keys - perfect for deployment!
+```bash
+streamlit run app.py
+```
+Features:
+- 📁 Upload JSON financial data files directly in the UI
+- 🔑 Configure Gemini/Groq API keys in the sidebar
+- 🚀 No need for `.env` file - all configuration done in browser
+- ☁️ Deploy to Streamlit Cloud, Heroku, or any cloud platform
+
+
 ---
 
 ## 📊 Evaluation Metrics & Results

@@ -3,16 +3,17 @@ Vector Store module for MD&A Generator
 Manages ChromaDB for storing and retrieving document embeddings
 """
 
+import warnings
+# Suppress FutureWarning from google.generativeai about package deprecation
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from typing import List, Dict, Any, Optional
 import google.generativeai as genai
 from pathlib import Path
-import warnings
 import time
 
-# Suppress warnings from google.generativeai about package deprecation
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 from .schemas import DocumentChunk, Citation
 from .config import settings

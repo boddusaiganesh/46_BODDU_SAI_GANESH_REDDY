@@ -3,6 +3,10 @@ MD&A Generator module
 Uses Gemini LLM with RAG context to generate Management Discussion & Analysis sections
 """
 
+import warnings
+# Suppress FutureWarning from google.generativeai about package deprecation
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import google.generativeai as genai
 from typing import List, Dict, Any, Optional
 from datetime import date
@@ -216,10 +220,14 @@ Also note any mitigating factors visible in the data."""
                         prompt,
                         generation_config=genai.GenerationConfig(
                             temperature=0.3,
-                            max_output_tokens=1500
+                            max_output_tokens=4096
                         )
                     )
                     content = response.text
+                    
+                    # Check for truncation and attempt continuation
+                    content = self._ensure_complete_response(model, prompt, content)
+                    
                     print(f"  ✅ Success with: {model_name}")
                     break # Success!
                 except Exception as e:
@@ -283,6 +291,71 @@ Also note any mitigating factors visible in the data."""
         
         return metrics[:5]  # Limit to top 5
     
+    def _is_truncated(self, text: str) -> bool:
+        """Check if response appears to be truncated mid-sentence"""
+        if not text or len(text.strip()) < 50:
+            return True
+        
+        text = text.strip()
+        
+        # Check for incomplete ending - no proper sentence ending
+        valid_endings = ('.', '!', '?', ':', '|', '*', ')', ']', '"', "'", '`')
+        if not text.endswith(valid_endings):
+            return True
+        
+        # Check for common truncation patterns
+        truncation_indicators = [
+            ' and', ' or', ' the', ' a', ' an', ' to', ' of', ' in', ' for',
+            ' with', ' by', ' from', ' at', ' on', ' is', ' are', ' was', ' were',
+            '$', '%', ','
+        ]
+        
+        last_20_chars = text[-20:].lower()
+        for indicator in truncation_indicators:
+            if last_20_chars.endswith(indicator):
+                return True
+        
+        return False
+    
+    def _ensure_complete_response(self, model, original_prompt: str, content: str, max_continuations: int = 2) -> str:
+        """Attempt to continue truncated responses"""
+        if not self._is_truncated(content):
+            return content
+        
+        print(f"    ⚠️ Response appears truncated, attempting continuation...")
+        
+        for attempt in range(max_continuations):
+            try:
+                continuation_prompt = f"""Continue the following text EXACTLY from where it was cut off. 
+Do NOT repeat any content - just continue naturally from the last word/sentence.
+
+TEXT TO CONTINUE:
+{content[-500:]}
+
+CONTINUE FROM HERE:"""
+                
+                response = model.generate_content(
+                    continuation_prompt,
+                    generation_config=genai.GenerationConfig(
+                        temperature=0.3,
+                        max_output_tokens=2048
+                    )
+                )
+                
+                continuation = response.text.strip()
+                if continuation:
+                    content = content.rstrip() + " " + continuation
+                    print(f"    ✅ Continuation {attempt + 1} added ({len(continuation)} chars)")
+                    
+                    if not self._is_truncated(content):
+                        break
+                        
+            except Exception as e:
+                print(f"    ⚠️ Continuation attempt {attempt + 1} failed: {e}")
+                break
+        
+        return content
+
     def _call_groq(self, prompt: str) -> str:
         """Fallback to Groq API (Llama 3) when Gemini is exhausted"""
         import requests
@@ -299,7 +372,7 @@ Also note any mitigating factors visible in the data."""
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.3,
-            "max_tokens": 800
+            "max_tokens": 2048
         }
         
         response = requests.post(url, headers=headers, json=payload, timeout=60)
